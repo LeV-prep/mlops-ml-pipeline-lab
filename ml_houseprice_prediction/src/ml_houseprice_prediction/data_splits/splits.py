@@ -99,8 +99,11 @@ def splits_data(df: pd.DataFrame) -> pd.DataFrame:
 
     # 👉 YOUR CODE HERE:
     # - Use train_test_split(df, ...)
-    # - Return df_train, df_test
+    df_train, df_test = train_test_split(df, test_size=0.2, random_state=42)
 
+    # - Return df_train, df_test
+    logger.info(f"Train shape: {df_train.shape} | Test shape: {df_test.shape}")
+    return df_train, df_test    
 
 # -------------------------------------------------------------------
 #  Function: Save Output Files
@@ -126,7 +129,8 @@ def save_data(df_train: pd.DataFrame, df_test: pd.DataFrame) -> Path:
     for filename, df in file_paths.items():
         ## YOUR CODE HERE
         # Save train_data.csv and test_data.csv in OUTPUT_DIR
-
+        output_path = OUTPUT_DIR / filename
+        df.to_csv(output_path, index=False)    
         logger.info(f"Save split data : {filename}: into datastores.")
 
 
@@ -167,8 +171,15 @@ def main() -> None:
 
     # 👉 YOUR CODE HERE:
     # - Call df_clean=load_data(...) with args.input_data_path
+    df_clean = load_data(args.input_data_path)
+
     # - Call df_train, df_test=split_data(...) on the clean data `df_clean`
+    df_train, df_test = splits_data(df_clean)
+
     # - Call save_data(...) on the split data `df_train`, `df_test`
+    save_data(df_train, df_test)
+
+    logger.info("Data splitting completed successfully.")
 
 
 

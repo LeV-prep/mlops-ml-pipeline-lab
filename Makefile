@@ -1,14 +1,13 @@
-
 # ======================================================================
 # Makefile for MLOps Training Project 
 # ======================================================================
 
 # ---------------------------- VARIABLES --------------------------------
-INPUT_DATA_PATH   ?= datastores/raw_csv_data/housing.csv
+INPUT_DATA_PATH   ?= datastores/raw_data/housing.csv
 OUTPUT_FILENAME   ?= clean_housing.csv
 INPUT_TRAIN_DATA  ?= datastores/splits_data/train_data.csv
 INPUT_TEST_DATA   ?= datastores/splits_data/test_data.csv
-MODEL_FILENEME    ?= modelstores/LinearRegression.joblib
+MODEL_FILENAME    ?= LinearRegression.joblib
 CONDA_ENV         ?= ml_env
 
 
@@ -42,26 +41,32 @@ update_dependencies:
 	@echo "=> Dependencies updated successfully."
 
 # ======================================================================
-# DATA PREPROCESSING, SPLITING & TRAINING
+# DATA PREPROCESSING, SPLITTING & TRAINING
 # ======================================================================
 
 # Run data preprocessing script
 clean:
 	@echo "=> Running data preprocessing..."
-	## your code here
-	@echo "=> Data preprocessing completed. Clean data saved to $(OUTPUT_FILENAME)."
+	python ml_houseprice_prediction/src/ml_houseprice_prediction/data_preprocessing/preprocessing.py \
+		--input_data_path $(INPUT_DATA_PATH) \
+		--output_data_filename $(OUTPUT_FILENAME)
+	@echo "=> Data preprocessing completed. Clean data saved to datastores/clean_data/$(OUTPUT_FILENAME)."
 
-# Run data preprocessing script
+# Run data splitting script
 split:
-	@echo "=> Running splits data ..."
-	## your code here
-	@echo "=> Splits data completed. Clean data saved to $(OUTPUT_FILENAME)."
+	@echo "=> Running splits data..."
+	python ml_houseprice_prediction/src/ml_houseprice_prediction/data_splits/splits.py \
+		--input_data_path datastores/clean_data/$(OUTPUT_FILENAME)
+	@echo "=> Splits data completed. Train/Test saved to datastores/splits_data/."
 
 # Run training script
 train:
 	@echo "=> Running train model..."
-	## your code here
-	@echo "=> train model completed successfully."	
+	python ml_houseprice_prediction/src/ml_houseprice_prediction/train_model/train.py \
+		--input_train_data $(INPUT_TRAIN_DATA) \
+		--input_test_data $(INPUT_TEST_DATA) \
+		--model_filename $(MODEL_FILENAME)
+	@echo "=> Train model completed successfully. Model stored in modelstores/$(MODEL_FILENAME)."
 
 
 
@@ -69,6 +74,5 @@ train:
 # ALL-IN-ONE WORKFLOW : local ci pipeline
 # ======================================================================
 
-pipeline: ## your code here
+pipeline: clean split train
 	@echo "All tasks completed successfully."
-

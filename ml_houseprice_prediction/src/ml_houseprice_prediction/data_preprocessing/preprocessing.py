@@ -91,10 +91,21 @@ def clean_data(df: pd.DataFrame) -> pd.DataFrame:
     logger.info("Cleaning dataset...")
     # 👉 YOUR CODE HERE:
     # - Strip column names (use df.columns.str.strip())
+    df.columns = df.columns.str.strip()
+
     # - Remove duplicates (use df.drop_duplicates())
+    df = df.drop_duplicates()
+
     # - Drop missing values (use df.dropna())
+    df = df.dropna()
+
     # - Log final shape
+    logger.info(f"Cleaned dataset shape: {df.shape}")
+
     # - Return the cleaned DataFrame
+    return df
+    
+
     
 
 
@@ -111,9 +122,16 @@ def save_data(df: pd.DataFrame, output_data_filename: str) -> Path:
     """
     # 👉 YOUR CODE HERE:
     # - Define output_path = OUTPUT_DIR / output_data_filename
+    output_path = OUTPUT_DIR / output_data_filename 
+
     # - Save DataFrame to CSV (index=False)
+    df.to_csv(output_path, index=False)
+
     # - Add logging.info message for confirmation
+    logger.info(f"Cleaned data saved to: {output_path}")
+
     # - Return the output_path
+    return output_path
     
 
 
@@ -161,9 +179,15 @@ def main() -> None:
 
     # 👉 YOUR CODE HERE:
     # - Call load_data() with args.input_data_path
+    df_raw = load_data(args.input_data_path)
+
     # - Call clean_data() on the loaded DataFrame
+    df_cleaned = clean_data(df_raw)
+
     # - Call save_data() with cleaned DataFrame and args.output_data_filename
+    save_data(df_cleaned, args.output_data_filename)
     
+    logger.info("Data preprocessing completed successfully.")
 
 
 if __name__ == "__main__":
